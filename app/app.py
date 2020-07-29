@@ -48,12 +48,14 @@ def checkQuestion():
     user = User.fromRequest(request)
     days = DaysRecord()
     if date.checkCode():
+        print(000)
         if days.check(date):
-            fileName = date.toString() + "." + days.getFormat(Date)
+            fileName = date.toString() + "." + days.getFormat(date)
             return {
                 "f": fileName,
                 "s": user.getSessionKey()
             }
+        print(222)
         return FIND_QUESTION_ERROR
     else:
         return CODE_ERROR

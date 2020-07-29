@@ -29,7 +29,7 @@ class DaysRecord:
             json.dump(self.data, fp, indent=2)
 
     def check(self, date):
-        if date.toString in self.data['days']:
+        if date.toString() in self.data['days']:
             return True
         return False
 
