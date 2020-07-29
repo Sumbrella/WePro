@@ -114,5 +114,28 @@ def handleGetAllDays():
     return "/".join(days.days)
 
 
+@app.route("/{}/".format(routes.uploadSchoolInfo))
+def handlerSchoolInfo():
+    """
+    save the user's schoold into file
+    :return:
+    """
+    user = User.fromRequest(request)
+    schoolInfo = request.args.get('schoolInfo')
+    user.saveSchoolInfo(schoolInfo)
+
+    return MESSAGE_RECEIVED
+
+
+@app.route("/{}/".format(routes.questionTime))
+def handleSendQuestionTime():
+    date = Date.fromRequest(request)
+    if not date.checkCode():
+        return CODE_ERROR
+
+    questionPath = date.getQuestionPath()
+    return str(int(os.path.getmtime(questionPath)))
+
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8080, debug=True)

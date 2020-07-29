@@ -1,7 +1,4 @@
-from WePro.until.days import DaysRecord
-from WePro.until.Date import Date
+from WePro.until.User import User
 
-dr = DaysRecord()
-dt = Date(2020, 7, 31)
-dr.add(dt, 'jpg')
-dr.save()
+user = User("oF7S25CRBHEe_iOoVwJ7ntQPpo5o")
+print(user.getSchoolInfo())

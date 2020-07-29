@@ -1,5 +1,7 @@
 """"""
-import os, time
+import os
+import time
+import json
 
 from WePro.tool.makeDir import makeDir
 from WePro.until.Date import Date
@@ -9,8 +11,9 @@ from WePro import routes
 
 class User:
     def __init__(self, openid):
-        self.openid = openid
-        self.userDir = os.path.join(usersPath, openid)
+        self._openid = openid
+        self._userDir = os.path.join(usersPath, openid)
+        self._schoolInfoPath = os.path.join(self.userDir, "schoolInfo.json")
 
         self.makeUserDir()
         # self.makeUserInfoFile()
@@ -22,6 +25,14 @@ class User:
         else:
             return User(request.args.get("openid"))
 
+    @property
+    def userDir(self):
+        return self._userDir
+
+    @property
+    def openid(self):
+        return self._openid
+
     def makeUserDir(self):
         # make special dir
         try:
@@ -31,10 +42,6 @@ class User:
         except Exception as e:
             print("[ERROR] In User.py make user's special dir:", e)
             raise e
-
-    def makeUserInfoFile(self):
-        # TODO: make a userInfo file
-        return
 
     def getClockPicturePath(self, pictureDate, pictureFormat):
         """
@@ -65,3 +72,13 @@ class User:
             if key[i] != sessionKey[i]:
                 return False
         return True
+
+    def getSchoolInfo(self):
+        with open(self._schoolInfoPath, "r") as fp:
+            data = json.load(fp)
+            return data
+
+    def saveSchoolInfo(self, schoolInfo):
+        with open(self._schoolInfoPath, "w") as fp:
+            json.dump(schoolInfo, fp)
+

@@ -59,7 +59,7 @@ class Date:
         else:
             return False
 
-    def getQuestionPath(self, fmt):
+    def getQuestionPath(self, fmt=None):
         if fmt is None:
             daysRecord = DaysRecord()
             fmt = daysRecord.getFormat(self)
