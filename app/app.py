@@ -91,7 +91,9 @@ def handleTimeSwap():
     date = Date.fromRequest(request)
     if not date.checkCode():
         return CODE_ERROR
-    os.path.getmtime(date.getQuestionPath())
+
+    fileTime = os.path.getmtime(date.getQuestionPath())
+    return fileTime
 
 
 if __name__ == '__main__':
