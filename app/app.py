@@ -1,8 +1,7 @@
 # encoding: utf-8
 import os
 
-from flask import Flask, request, Response
-from werkzeug.datastructures import FileStorage
+from flask import Flask, request, Response, current_app
 
 from WePro import routes
 from WePro import basic
@@ -10,9 +9,12 @@ from WePro.messages import *
 from WePro.until.User import User
 from WePro.until.Date import Date
 from WePro.until.Picture import Picture
+from WePro.until.days import DaysRecord
+from WePro.until.Lock import Lock
 
 
 app = Flask(__name__)
+app.datesLock = Lock.getFileLock('dates')
 
 
 @app.route("/")
@@ -44,16 +46,14 @@ def handleSubmitPicture():
 def checkQuestion():
     date = Date.fromRequest(request)
     user = User.fromRequest(request)
+    days = DaysRecord()
     if date.checkCode():
-        targetName = date.toString()
-        questionFiles = os.listdir(basic.clockQuestionPath)
-        for fileName in questionFiles:
-            realName, extName = os.path.splitext(fileName)
-            if realName == targetName:
-                return {
-                    "f": fileName,
-                    "s": user.getSessionKey()
-                }
+        if days.check(date):
+            fileName = date.toString() + "." + days.getFormat(Date)
+            return {
+                "f": fileName,
+                "s": user.getSessionKey()
+            }
         return FIND_QUESTION_ERROR
     else:
         return CODE_ERROR
@@ -78,11 +78,21 @@ def handleGetQuestion(data):
 
 @app.route("/{}/".format(routes.submitQuestion), methods=['POST'])
 def handleSubmitQuestion():
-    user = User.fromRequest(request)
+    """
+    The Manager submit one day's question
+    :return:
+    """
+    current_app.datesLock.acquire()
+    # user = User.fromRequest(request)
     date = Date.fromRequest(request)
+    days = DaysRecord()
     picture = Picture.fromRequest(request)
-    savedPath = date.getQuestionPath(picture.format)
-    picture.save(savedPath)
+    savePath = date.getQuestionPath(picture.format)
+    picture.save(savePath)
+    days.add(date, picture.format)
+    days.save()
+    current_app.datesLock.release()
+
     return PICTURE_RECEIVED
 
 
@@ -91,9 +101,17 @@ def handleTimeSwap():
     date = Date.fromRequest(request)
     if not date.checkCode():
         return CODE_ERROR
-
     fileTime = os.path.getmtime(date.getQuestionPath())
     return fileTime
+
+
+@app.route("/{}/".format(routes.getAllDays), methods=['GET'])
+def handleGetAllDays():
+    date = Date.fromRequest(request)
+    days = DaysRecord()
+    if not date.checkCode():
+        return CODE_ERROR
+    return "/".join(days.days)
 
 
 if __name__ == '__main__':

@@ -3,6 +3,7 @@
 """
 import json, os
 from WePro import basic
+from WePro.until.days import DaysRecord
 
 
 class Date:
@@ -58,9 +59,15 @@ class Date:
         else:
             return False
 
-    def getQuestionPath(self, format):
+    def getQuestionPath(self, fmt):
+        if fmt is None:
+            daysRecord = DaysRecord()
+            fmt = daysRecord.getFormat(self)
+            if fmt is None:
+                fmt = "jpg"
+
         questionPath = basic.clockQuestionPath
-        fileName = self.toString() + "." + format
+        fileName = self.toString() + "." + fmt
         targetPath = os.path.join(questionPath, fileName)
 
         return targetPath

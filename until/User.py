@@ -44,7 +44,7 @@ class User:
         """
         pathName = os.path.join(self.userDir, "clockPicture", pictureDate.toString())
 
-        return pathName + pictureFormat
+        return pathName + "." + pictureFormat
 
     def getSessionKey(self):
         t = time.localtime()

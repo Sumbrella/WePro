@@ -8,3 +8,4 @@ question = "getQuestion"
 checkQuestion = "checkQuestion"
 submitQuestion = 'submitQuestion'
 checkTime = "checkTime"
+getAllDays = 'getAllDays'
