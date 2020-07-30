@@ -6,6 +6,7 @@ from flask import Flask, request, Response, current_app
 from WePro import routes
 from WePro import basic
 from WePro.messages import *
+from WePro.tool.saveClockDescription import saveClockDescription
 from WePro.until.User import User
 from WePro.until.Date import Date
 from WePro.until.Picture import Picture
@@ -15,6 +16,7 @@ from WePro.until.Lock import Lock
 
 app = Flask(__name__)
 app.datesLock = Lock.getFileLock('dates')
+app.describeLock = Lock.getFileLock('description')
 
 
 @app.route("/")
@@ -34,6 +36,9 @@ def handleSubmitPicture():
         picture = Picture.fromRequest(request)
         filePath = user.getClockPicturePath(date, picture.format)
         picture.save(filePath)
+
+        lock = current_app.describeLock
+        saveClockDescription(lock, user, date, picture.format)
 
     except Exception as e:
         print("[ERROR] in app.route(routes.clockPicture): ", e)

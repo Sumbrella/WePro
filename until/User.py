@@ -3,11 +3,40 @@ import os
 import time
 import json
 
+from WePro import routes
 from WePro.tool.makeDir import makeDir
 from WePro.until.Date import Date
-from WePro.basic import usersPath
-from WePro import routes
+from WePro.basic import usersPath, clockQuestionPath
 
+
+class SchoolInfo:
+    def __init__(self, _dict):
+        self._studentNo = _dict['studentNo']
+        self._college = _dict['college']
+        self._grade = _dict['grade']
+        self._profession = _dict['profession']
+
+    @staticmethod
+    def fromJson(js):
+        import json
+        data = json.loads(js)
+        return SchoolInfo(data)
+
+    @property
+    def studentNo(self):
+        return self._studentNo
+
+    @property
+    def grade(self):
+        return self._grade
+
+    @property
+    def college(self):
+        return self._college
+
+    @property
+    def profession(self):
+        return self._profession
 
 class User:
     def __init__(self, openid):
@@ -74,9 +103,11 @@ class User:
         return True
 
     def getSchoolInfo(self):
-        with open(self._schoolInfoPath, "r") as fp:
+        with open(self._schoolInfoPath, "r", encoding='utf-8') as fp:
             data = json.load(fp)
-            return data
+            data = json.loads(data)
+            res = SchoolInfo(data)
+            return res
 
     def saveSchoolInfo(self, schoolInfo):
         with open(self._schoolInfoPath, "w") as fp:
