@@ -4,17 +4,16 @@ import csv
 from WePro.basic import clockQuestionPath
 
 
-def saveClockDescription(fileLock, user, date, fmt):
+def saveClockDescription(fileLock, user, clockDate, submitDate, fmt):
     """
     Save the clock record into csv file
-    row: [date, openid, studentNo, grade, college, format ]
+    row: openid, clockDate, submitDate, format,
     """
     fileLock.acquire()
 
     descriptionPath = os.path.join(clockQuestionPath, "description", "description.csv")
-    schoolInfo = user.getSchoolInfo()
 
-    dataRow = [date.toString(), user.openid, schoolInfo.studentNo, schoolInfo.grade, schoolInfo.college, fmt]
+    dataRow = [user.openid, clockDate.toString(), submitDate.toString(), fmt]
     with open(descriptionPath, "a+", encoding="utf-8") as f:
         csv_write = csv.writer(f)
         csv_write.writerow(dataRow)

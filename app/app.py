@@ -32,13 +32,14 @@ def handleSubmitPicture():
     """
     try:
         user = User.fromRequest(request)
-        date = Date.fromRequest(request)
+        submitDate = Date.fromRequest(request)
+        todayDate = Date.fromRequest(request, key="today")
         picture = Picture.fromRequest(request)
-        filePath = user.getClockPicturePath(date, picture.format)
+        filePath = user.getClockPicturePath(submitDate, picture.format)
         picture.save(filePath)
-
         lock = current_app.describeLock
-        saveClockDescription(lock, user, date, picture.format)
+
+        saveClockDescription(lock, user, submitDate, todayDate, picture.format)
 
     except Exception as e:
         print("[ERROR] in app.route(routes.clockPicture): ", e)

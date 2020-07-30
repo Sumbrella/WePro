@@ -23,11 +23,11 @@ class Date:
         return Date(date_dict['year'], date_dict['month'], date_dict['day'])
 
     @staticmethod
-    def fromRequest(request):
+    def fromRequest(request, key="date"):
         if request.form:
-            date = request.form.get("date")
+            date = request.form.get(key)
         else:
-            date = request.args.get("date")
+            date = request.args.get(key)
         if not date:
             print("can't get date in Date.py")
             raise
